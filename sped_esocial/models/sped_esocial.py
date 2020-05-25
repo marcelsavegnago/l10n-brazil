@@ -757,6 +757,7 @@ class SpedEsocial(models.Model):
                             ]
 
                         payslips = self.env['hr.payslip'].search(domain_payslip)
+
                     else:
                         # Busca os payslips de pagamento mensal deste autonomo
                         domain_payslip_autonomo = [
@@ -773,15 +774,36 @@ class SpedEsocial(models.Model):
                     # Se tem payslip, cria o registro S-1200
                     if payslips:
 
-                        self._gerar_intermediario_s1200(
-                            contratos, matriz, payslips, periodo, trabalhador
-                        )
+                        # Se o payslip não está em 'verify' ou 'done' manda um raise
+                        for payslip in payslips:
+                            if payslip.state not in ['verify', 'done']:
+                                raise ValidationError("Existem Holerites não validados neste período !\n"
+                                                      "Confirme ou Cancele todos os holerites deste período"
+                                                      "antes de processar o e-Social.")
 
-                    if mes == 12 and payslips_decimo_terceiro:
-                        self._gerar_intermediario_s1200(
-                            contratos, matriz, payslips_decimo_terceiro,
-                            periodo, trabalhador
-                        )
+                        # Verifica se o registro S-1200 já existe, cria ou atualiza
+                        domain_s1200 = [
+                            ('company_id', '=', matriz.id),
+                            ('trabalhador_id', '=', trabalhador.id),
+                            ('periodo_id', '=', periodo.id),
+                        ]
+                        s1200 = self.env['sped.esocial.remuneracao'].search(domain_s1200)
+                        if not s1200:
+                            vals = {
+                                'company_id': matriz.id,
+                                'trabalhador_id': trabalhador.id,
+                                'contract_ids': [(6, 0, contratos.ids)],
+                                'periodo_id': periodo.id,
+                            }
+
+                            # Criar intermediario de acordo com o tipo de employee
+                            if trabalhador.tipo != 'autonomo':
+                                vals.update(
+                                    {'payslip_ids': [(6, 0, payslips.ids)]})
+                            else:
+                                vals.update(
+                                    {'payslip_autonomo_ids': [(6, 0, payslips.ids)]})
+
                             self._gerar_intermediario_s1200(
                                 contratos, matriz, payslips,
                                 periodo, trabalhador

@@ -99,6 +99,9 @@ class HrTreinamentosCapacitacoes(models.Model):
     tipo = fields.Selection(
         string=u'Tipo',
         selection=TIPO_TREI,
+        help=u'Nome Layout: tpTreiCap - Tamanho: Até 1 Caracteres - Tipo de '
+             u'treinamento/capacitação/exercício simulado, '
+             u'conforme opções abaixo',
     )
     treinamento_antes_admissao = fields.Selection(
         string=u'Treinamento antes da Admissão',

@@ -104,6 +104,11 @@ class HrEquipamentoProtecaoIndividualLine(models.Model):
             ('S', 'Sim'),
             ('N', 'Não'),
         ],
+        help=u'Nome Layout: medProtecao - Tamanho: Até 1 Caracteres - Foi '
+             u'tentada a implementação de medidas de proteção coletiva, '
+             u'de caráter administrativo ou de organização, optando-se pelo '
+             u'EPI por inviabilidade técnica, insuficiência ou interinidade, '
+             u'ou ainda em caráter complementar ou emergencial?',
     )
     cond_funcionamento = fields.Selection(
         string=u'Condições de funcionamento ajustadas',

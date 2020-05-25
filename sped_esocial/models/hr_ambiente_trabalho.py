@@ -58,6 +58,9 @@ class AmbienteTrabalho(models.Model):
         string=u'Data de Fim',
         comodel_name='account.period',
         domain=[('special', '=', False)],
+        help=u'Nome layout: fimValid - Tamanho: Até 7 Caracteres - Preencher '
+             u'com o mês e ano de término da validade das informações, '
+             u'se houver.',
     )
     nova_data_inicio = fields.Many2one(
         string=u'Data de início',
